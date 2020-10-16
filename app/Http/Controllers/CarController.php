@@ -43,9 +43,10 @@ class CarController extends Controller
     {
        $data = $request->all();
 
-       if (empty($data['modello']) || empty($data['targa'])) {
-        return back()->withInput();
-       }
+       $request->validate([
+        'marca' => 'required|min:2|max:50',
+        'modello' => 'required|min:2|max:50',
+       ]);
 
        $carNew = new Car();
        $carNew->marca = $data['marca'];
@@ -53,7 +54,9 @@ class CarController extends Controller
        $carNew->targa = $data['targa'];
        $carNew->prezzo = $data['prezzo'];
        $carNewSaved = $carNew->save();
-       dd($carNewSaved);
+       if ($carNewSaved) {
+            return redirect()->route('cars.index');
+       }
     }
 
     /**
@@ -62,9 +65,9 @@ class CarController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Car $car)
     {
-        //
+        return view('show',compact('car'));
     }
 
     /**
@@ -73,9 +76,9 @@ class CarController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Car $car)
     {
-        //
+        return view('edit',compact('car'));
     }
 
     /**
@@ -85,9 +88,16 @@ class CarController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Car $car)
     {
-        //
+        
+        $data = $request->all();
+        $car->update($data);
+
+        if ($car) {
+            return redirect()->route('cars.index');
+        }
+
     }
 
     /**
@@ -96,8 +106,12 @@ class CarController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Car $car)
     {
-        //
+        $carDelete = $car->delete();
+
+        if ($carDelete) {
+            return redirect()->route('cars.index');
+        }
     }
 }

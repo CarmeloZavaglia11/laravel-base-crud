@@ -1,8 +1,17 @@
 @extends('layouts/app')
 
-@section('titolo','Concessionario')
+@section('title','Concessionario')
     
 @section('content')
+    @if ($errors->any())
+        <div class="alert alert-danger">
+        <ul>
+    @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+    @endforeach
+        </ul>
+        </div>
+    @endif
     <form action="{{route('cars.store')}}" method="post">
         @csrf
         @method('POST')
